@@ -6,12 +6,16 @@ const db = new Database('./src/database/myDatabase.db', {
 
 console.log('Connected to myDatabase');
 
-db.prepare(`
-    CREATE TABLE IF NOT EXISTS User (
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-    )
-`).run();
+// db.exec('DROP TABLE IF EXISTS User');
+// console.log('User table deleted');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS User (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+  )
+`);
 
 console.log('User table is ready');
 

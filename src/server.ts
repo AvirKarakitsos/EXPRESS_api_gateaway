@@ -19,15 +19,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/users', (req, res) => {
-    try {
-        const users = db.prepare('SELECT * FROM User').all(); // Synchrone
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs.' });
-    }
-});
-
 app.use('/api', router);
 
 export default app
