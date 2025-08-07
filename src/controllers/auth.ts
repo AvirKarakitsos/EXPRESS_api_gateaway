@@ -50,15 +50,18 @@ export const login = async (req: Request, res: Response) => {
              res.status(401).json({result: 'Paire email/mot de passe incorrecte'});
             } else {
                const secret = fs.readFileSync('./one.pem');
-               const jwtDuration: number = 60 * 60 * 24 * 30;
-               
-               res.status(200).json({
-                     token: jwt.sign(
-                        { userId: user.id },
-                        secret,
-                        { expiresIn: jwtDuration, algorithm: 'RS256' }
-                     )
-               })
+               const duration: number = 60 * 60 * 24 * 30;
+               const token = jwt.sign(
+                  { userId: user.id },
+                  secret,
+                  { expiresIn: duration, algorithm: 'RS256' }
+               )
+
+               res.cookie('token', token, {
+                  httpOnly: true,        
+                  secure: false,         
+                  maxAge: duration      
+               });
 
                res.status(200).json({result: 'Authentification réussie'});
          }
