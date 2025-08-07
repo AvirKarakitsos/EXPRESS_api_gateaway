@@ -1,6 +1,8 @@
 import db from '../database/connection';
 import { Request, Response } from 'express';
 import bcrypt from "bcrypt"
+import fs from "node:fs"
+import jwt, {Algorithm} from "jsonwebtoken"
 
 interface User {
   id: number;
@@ -47,7 +49,18 @@ export const login = async (req: Request, res: Response) => {
           if (!isValid) {
              res.status(401).json({result: 'Paire email/mot de passe incorrecte'});
             } else {
-            res.status(200).json({result: 'Authentification réussie'});
+               const secret = fs.readFileSync('./one.pem');
+               const jwtDuration: number = 60 * 60 * 24 * 30;
+               
+               res.status(200).json({
+                     token: jwt.sign(
+                        { userId: user.id },
+                        secret,
+                        { expiresIn: jwtDuration, algorithm: 'RS256' }
+                     )
+               })
+
+               res.status(200).json({result: 'Authentification réussie'});
          }
       }
 
