@@ -10,6 +10,13 @@ interface User {
   password: string; // mot de passe hashé
 }
 
+export const index = (req: Request, res: Response) => {
+   const token = req.cookies.token;
+   console.log(token)
+   if (!token) return res.sendStatus(401); // Unauthorized
+   else return res.status(201).json({result: 'tout est OK'})
+}
+
 export const signup = async (req: Request, res: Response) => {
    const credentials = req.body
 

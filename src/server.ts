@@ -1,10 +1,13 @@
 import express from 'express';
 import router from './routes/auth';
+import cookieParser from 'cookie-parser'
 import db from './database/connection';
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
