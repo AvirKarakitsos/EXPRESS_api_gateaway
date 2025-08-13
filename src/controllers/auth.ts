@@ -49,7 +49,7 @@ export const login = async (req: Request, res: Response) => {
       const user = sql.get(credentials.email) as User | undefined;
       
       if (!user) {
-				return res.status(401).json({ message: 'Paire email/mot de passe incorrecte'})
+				res.status(401).json({ message: 'Paire email/mot de passe incorrecte'})
 		} else {
          const isValid = await bcrypt.compare(credentials.password,user.password)
 
@@ -57,17 +57,30 @@ export const login = async (req: Request, res: Response) => {
              res.status(401).json({result: 'Paire email/mot de passe incorrecte'});
             } else {
                const secret = fs.readFileSync('./one.pem');
-               const duration: number = 60 * 60 * 24 * 30;
-               const token = jwt.sign(
+               const durationAccess: number = 60 * 10;
+               const durationRefresh: number = 60 * 60 * 24;
+
+               const accessToken = jwt.sign(
                   { userId: user.id },
                   secret,
-                  { expiresIn: duration, algorithm: 'RS256' }
+                  { expiresIn: durationAccess, algorithm: 'RS256' }
                )
 
-               res.cookie('token', token, {
+               const refreshToken = jwt.sign(
+                  { userId: user.id },
+                  secret,
+                  { expiresIn: durationRefresh, algorithm: 'RS256' }
+               )
+
+               res.cookie('accessToken', accessToken, {
                   httpOnly: true,        
                   secure: false,         
-                  maxAge: duration      
+                  maxAge: durationAccess      
+               });
+               res.cookie('refreshToken', accessToken, {
+                  httpOnly: true,        
+                  secure: false,         
+                  maxAge: durationRefresh      
                });
 
                res.status(200).json({result: 'Authentification réussie'});
